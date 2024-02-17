@@ -1,8 +1,8 @@
 //
 // Created on 2022/5/12.
 //
-#include<iostream>
-#include<algorithm>
+#include <iostream>
+#include <algorithm>
 using namespace std;
 
 // 升序采用大根堆，降序采用小根堆
