@@ -1,96 +1,103 @@
 //
-// Created on 2022/5/11.
+// Created on 2024/2/17.
 //
-
 #include <iostream>
 #include <vector>
 #include <list>
-#include <queue>
 #include <limits>
 using namespace std;
 
 const int INF = numeric_limits<int>::max();
-
 class Graph {
 private:
     int V; // 顶点数
     bool useAdjMatrix; // 是否使用邻接矩阵
     vector<vector<int>> adjMatrix; // 邻接矩阵
     vector<list<pair<int, int>>> adjList; // 邻接表
-    void dijkstraMatrix(int src){
+    void bellmanfordMatrix(int src) {
         vector<int> dist(V, INF);
-        vector<bool> visited(V, false);
         dist[src] = 0;
-        for(int i=0;i<V-1;i++){
-            int u = -1;
-            // 从未访问的顶点中找到距离最近的顶点
-            for(int j=0;j<V;j++){
-                if(!visited[j] && (u==-1 || dist[j]<dist[u])){
-                    u = j;
+        // 对每条边进行V-1次松弛操作
+        for (int i = 0; i < V - 1; i++) {
+            for (int u = 0; u < V; u++) {
+                for (int v = 0; v < V; v++) {
+                    if (adjMatrix[u][v] != INF) {
+                        dist[v] = min(dist[v], dist[u] + adjMatrix[u][v]);
+                    }
                 }
             }
-            visited[u] = true;
-            for(int v=0;v<V;v++){
-                if(!visited[v] && adjMatrix[u][v]!=INF){
-                    dist[v] = min(dist[v], dist[u]+adjMatrix[u][v]);
+        }
+        // 检查是否有负权回路
+        for (int u = 0; u < V; u++) {
+            for (int v = 0; v < V; v++) {
+                if (adjMatrix[u][v] != INF) {
+                    if (dist[v] > dist[u] + adjMatrix[u][v]) {
+                        cout << "Graph contains negative weight cycle" << endl;
+                        return;
+                    }
                 }
             }
         }
         print_solution(dist);
     }
-
-    void dijkstraList(int src){
-        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
+    void bellmanfordList(int src){
         vector<int> dist(V, INF);
-        pq.emplace(0, src);
         dist[src] = 0;
-        while(!pq.empty()){
-            int u = pq.top().second;
-            pq.pop();
+        for(int i=0;i<V-1;i++){
+            for(int u=0;u<V;u++){
+                for(auto it=adjList[u].begin();it!=adjList[u].end();it++){
+                    int v = it->first;
+                    int weight = it->second;
+                    dist[v] = min(dist[v], dist[u]+weight);
+                }
+            }
+        }
+        for(int u=0;u<V;u++){
             for(auto it=adjList[u].begin();it!=adjList[u].end();it++){
                 int v = it->first;
                 int weight = it->second;
-                if(dist[v] > dist[u]+weight){
-                    dist[v] = dist[u]+weight;
-                    pq.emplace(dist[v], v);
+                if(dist[v]>dist[u]+weight){
+                    cout << "Graph contains negative weight cycle" << endl;
+                    return;
                 }
             }
         }
         print_solution(dist);
     }
 
-    void print_solution(const vector<int> &dist) const{
+    void print_solution(const vector<int> &dist) const {
         cout << "顶点到源点的最短距离：" << endl;
-        for(int i=0;i<V;i++){
+        for (int i = 0; i < V; i++) {
             cout << i << " " << dist[i] << endl;
         }
     }
 public:
-    explicit Graph(int V, bool useAdjMatrix = true):V(V),useAdjMatrix(useAdjMatrix){
+    explicit Graph(int V, bool useAdjMatrix = true) : V(V), useAdjMatrix(useAdjMatrix) {
         adjList.resize(V);
         adjMatrix.resize(V, vector<int>(V, INF));
         for(int i=0;i<V;i++){
             adjMatrix[i][i] = 0;
         }
     }
-    void addEdge(int u, int v, int w){
-        if(useAdjMatrix){
+
+    void addEdge(int u, int v, int w) {
+        if (useAdjMatrix) {
             adjMatrix[u][v] = w;
             adjMatrix[v][u] = w; // 无向图
-        }else{
+        } else {
             adjList[u].emplace_back(make_pair(v, w));
             adjList[v].emplace_back(make_pair(u, w)); // 无向图
         }
     }
-    void dijkstra(int src){
-        if(useAdjMatrix){
-            dijkstraMatrix(src);
-        }else{
-            dijkstraList(src);
+
+    void bellmanford(int src) {
+        if (useAdjMatrix) {
+            bellmanfordMatrix(src);
+        } else {
+            bellmanfordList(src);
         }
     }
 };
-
 int main(){
     Graph graph(9, false);
     graph.addEdge(0, 1, 4);
@@ -107,7 +114,6 @@ int main(){
     graph.addEdge(6, 7, 1);
     graph.addEdge(6, 8, 6);
     graph.addEdge(7, 8, 7);
-
-    graph.dijkstra(0);
+    graph.bellmanford(0);
     return 0;
 }

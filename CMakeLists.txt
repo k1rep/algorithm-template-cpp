@@ -17,3 +17,6 @@ add_executable(countingsort countingsort.cpp)
 
 add_executable(radixsort radixsort.cpp)
 add_executable(selectionsort selectionsort.cpp)
+add_executable(bellmanford bellmanford.cpp)
+add_executable(floydwarshall floydwarshall.cpp)
+add_executable(spfa spfa.cpp)
