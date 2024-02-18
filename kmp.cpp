@@ -11,9 +11,13 @@ private:
     void get_next(const string& p, vector<int>& next){
         int n = p.size();
         next[0] = 0;
+        // i表示后缀末尾，j表示前缀末尾
         for(int i=1,j=0;i<n;i++){
+            // 不匹配时按照next数组回溯
             while(j>0 && p[i]!=p[j]) j = next[j-1];
+            // 匹配时前缀末尾后移
             if(p[i] == p[j]) ++j;
+            // 更新next数组为前缀末尾下标
             next[i] = j;
         }
     }
