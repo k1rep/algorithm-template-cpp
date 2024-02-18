@@ -9,7 +9,7 @@ private:
     int n;
     vector<vector<int>> graph;
 public:
-    Graph(int n){
+    explicit Graph(int n){
         this->n = n;
         graph.resize(n, vector<int>(n, -1));
     }

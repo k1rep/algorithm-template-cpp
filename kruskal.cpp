@@ -10,7 +10,7 @@ private:
     vector<int> parent;
     vector<int> rank;
 public:
-    DisjointSetUnion(int n){
+    explicit DisjointSetUnion(int n){
         parent.resize(n);
         rank.resize(n);
         for(int i = 0; i < n; i++){
@@ -43,7 +43,7 @@ private:
     int n;
     vector<vector<int>> edges;
 public:
-    Graph(int n){
+    explicit Graph(int n){
         this->n = n;
     }
     void add_edge(int u, int v, int w){
